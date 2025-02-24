@@ -7,18 +7,25 @@ $conn = $database->getConnection();
 $data = json_decode(file_get_contents("php://input"));
 
 if (!empty($data->id)) {
+
     $query = "UPDATE users SET name=:name, email=:email, phone=:phone WHERE id=:id";
     $stmt = $conn->prepare($query);
-    $stmt->bindParam(":id", $data->id);
-    $stmt->bindParam(":name", $data->name);
-    $stmt->bindParam(":email", $data->email);
-    $stmt->bindParam(":phone", $data->phone);
-
-    if ($stmt->execute()) {
+    
+    $success = $stmt->execute([
+        ":id" => $data->id,
+        ":name" => $data->name,
+        ":email" => $data->email,
+        ":phone" => $data->phone
+    ]);
+    
+    if ($success) {
         echo json_encode(["message" => "User updated successfully"]);
     } else {
-        echo json_encode(["message" => "User update failed"]);
+        echo json_encode(["message" => "Failed to update user"]);
     }
+    
+
+
 } else {
     echo json_encode(["message" => "Invalid ID"]);
 }
